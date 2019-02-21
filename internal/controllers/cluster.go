@@ -159,6 +159,7 @@ type addClusterInsForm struct {
 	Addr            string `form:"addr" binding:"required"`
 	Weight          int    `form:"weight" binding:"required"`
 	NeedCheckHealth bool   `form:"need_check_health"`
+	HealthCheckURL string `form:"health_check_url"`
 }
 type addClusterInsResp struct {
 	code.CodeInfo
@@ -182,7 +183,7 @@ func AddClusterInstance(c *gin.Context) {
 
 	clusterID := c.Param("clusterID")
 	if resp.IntanceID, err = services.AddClusterInstance(clusterID, form.Name,
-		form.Addr, form.Weight, form.NeedCheckHealth); err != nil {
+		form.Addr, form.Weight, form.NeedCheckHealth,form.HealthCheckURL); err != nil {
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
 		return
@@ -221,6 +222,7 @@ type updateClusterInsForm struct {
 	Addr            string `form:"addr" binding:"required"`
 	Weight          int    `form:"weight" binding:"required"`
 	NeedCheckHealth bool   `form:"need_check_health"`
+	HealthCheckURL string `form:"health_check_url"`
 }
 type updateClusterInsResp struct {
 	code.CodeInfo
@@ -244,7 +246,7 @@ func UpdateClusterInstance(c *gin.Context) {
 	clusterID := c.Param("clusterID")
 	instanceID := c.Param("instanceID")
 	if err = services.UpdateClusterInstanceInfo(clusterID, instanceID,
-		form.Name, form.Addr, form.Weight, form.NeedCheckHealth); err != nil {
+		form.Name, form.Addr, form.Weight, form.NeedCheckHealth, form.HealthCheckURL); err != nil {
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
 	}

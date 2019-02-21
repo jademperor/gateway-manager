@@ -2,11 +2,11 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 	"time"
 
 	"github.com/jademperor/common/configs"
+	"github.com/jademperor/common/etcdutils"
 	"github.com/jademperor/common/models"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/logger"
@@ -29,9 +29,9 @@ func NewCluster(name string, srvInstances []*models.ServerInstance) (clusterID s
 	}
 	clusterKey := utils.Fstring("%s%s", configs.ClustersKey, clusterID)
 	clusterOptKey := utils.Fstring("%s/%s", clusterKey, configs.ClusterOptionsKey)
-	data, err := json.Marshal(clsOpt)
+	data, err := etcdutils.Encode(clsOpt)
 	if err != nil {
-		logger.Logger.Errorf("json.Marshal(clsOpt) got err: %v", err)
+		logger.Logger.Errorf("etcdutils.Encode(clsOpt) got err: %v", err)
 		return "", err
 	}
 	// save cluster option
@@ -45,7 +45,7 @@ func NewCluster(name string, srvInstances []*models.ServerInstance) (clusterID s
 		instanceKey := utils.Fstring("%s/%s", clusterKey, instanceID)
 		instance.ClusterID = clusterID
 		instance.Idx = instanceID
-		data, _ := json.Marshal(instance)
+		data, _ := etcdutils.Encode(instance)
 		_ = store.Set(instanceKey, string(data), -1)
 	}
 	return
@@ -66,7 +66,7 @@ func UpdateClusterInfo(clusterID, name string) error {
 		Idx:  clusterID,
 		Name: name,
 	}
-	data, _ := json.Marshal(clsOpt)
+	data, _ := etcdutils.Encode(clsOpt)
 
 	return store.Set(clusterOptKey, string(data), -1)
 }
@@ -90,14 +90,14 @@ func GetAllClusters() ([]*Cluster, error) {
 			for _, srvInsNode := range resp2.Node.Nodes {
 				// skip the option node
 				if strings.Split(srvInsNode.Key, "/")[3] == configs.ClusterOptionsKey {
-					if err := json.Unmarshal([]byte(srvInsNode.Value), clsOpt); err != nil {
+					if err := etcdutils.Decode(srvInsNode.Value, clsOpt); err != nil {
 						logger.Logger.Error(err)
 					}
 					continue
 				}
 
 				srvInsCfg := new(models.ServerInstance)
-				if err := json.Unmarshal([]byte(srvInsNode.Value), srvInsCfg); err != nil {
+				if err := etcdutils.Decode(srvInsNode.Value, srvInsCfg); err != nil {
 					logger.Logger.Error(err)
 					continue
 				}
@@ -134,14 +134,14 @@ func GetClusterInfo(clusterID string) (*Cluster, error) {
 	for _, srvInsNode := range resp.Node.Nodes {
 		// skip the option node
 		if strings.Split(srvInsNode.Key, "/")[3] == configs.ClusterOptionsKey {
-			if err := json.Unmarshal([]byte(srvInsNode.Value), clsOpt); err != nil {
+			if err := etcdutils.Decode(srvInsNode.Value, clsOpt); err != nil {
 				logger.Logger.Error(err)
 			}
 			continue
 		}
 
 		srvInsCfg := new(models.ServerInstance)
-		if err := json.Unmarshal([]byte(srvInsNode.Value), srvInsCfg); err != nil {
+		if err := etcdutils.Decode(srvInsNode.Value, srvInsCfg); err != nil {
 			logger.Logger.Error(err)
 			continue
 		}
@@ -157,7 +157,7 @@ func GetClusterInfo(clusterID string) (*Cluster, error) {
 
 // AddClusterInstance add a instance into the cluster
 func AddClusterInstance(clusterID, name, addr string,
-	weight int, need bool) (instanceID string, err error) {
+	weight int, need bool, hcURL string) (instanceID string, err error) {
 	instanceID = utils.UUID()
 	instanceKey := utils.Fstring("%s%s/%s", configs.ClustersKey, clusterID, instanceID)
 
@@ -168,8 +168,9 @@ func AddClusterInstance(clusterID, name, addr string,
 		ClusterID:       clusterID,
 		Weight:          weight,
 		NeedCheckHealth: need,
+		HealthCheckURL:  hcURL,
 	}
-	data, _ := json.Marshal(srvInstance)
+	data, _ := etcdutils.Encode(srvInstance)
 
 	err = store.Set(instanceKey, string(data), -1)
 	return
@@ -183,7 +184,7 @@ func DelClusterInstance(clusterID, instanceID string) error {
 
 // UpdateClusterInstanceInfo update a instance info in a cluster sets
 func UpdateClusterInstanceInfo(clusterID, instanceID, name, addr string,
-	weight int, need bool) error {
+	weight int, need bool, hcURL string) error {
 	instanceKey := utils.Fstring("%s%s/%s", configs.ClustersKey, clusterID, instanceID)
 	srvInstance := &models.ServerInstance{
 		Idx:             instanceID,
@@ -192,8 +193,9 @@ func UpdateClusterInstanceInfo(clusterID, instanceID, name, addr string,
 		ClusterID:       clusterID,
 		Weight:          weight,
 		NeedCheckHealth: need,
+		HealthCheckURL:  hcURL,
 	}
-	data, _ := json.Marshal(srvInstance)
+	data, _ := etcdutils.Encode(srvInstance)
 
 	store.Set(instanceKey, string(data), -1)
 	return nil
@@ -208,7 +210,7 @@ func GetClusterInstanceInfo(clusterID, instanceID string) (*models.ServerInstanc
 		return nil, err
 	}
 
-	if err = json.Unmarshal([]byte(v), instance); err != nil {
+	if err = etcdutils.Decode((v), instance); err != nil {
 		return nil, err
 	}
 	return instance, nil

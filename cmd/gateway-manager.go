@@ -1,11 +1,13 @@
 package main
 
 import (
+	"time"
 	"flag"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jademperor/common/pkg/ginutils"
+	"github.com/jademperor/gateway-manager/internal/healthchecking"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/controllers"
 	"github.com/jademperor/gateway-manager/internal/logger"
@@ -48,18 +50,20 @@ func prepare() {
 	engine.PUT("/v1/apis/:apiID", controllers.UpdateAPI)
 	engine.GET("/v1/apis/:apiID", controllers.GetAPIInfo)
 
-	// engine.POST("/v1/routings", controllers.GetAllAPIs)
-	// engine.POST("/v1/routings", controllers.GetAllAPIs)
-	// engine.POST("/v1/routings", controllers.GetAllAPIs)
-	// engine.POST("/v1/routings", controllers.GetAllAPIs)
+	engine.GET("/v1/routings", controllers.GetAllRoutings)
+	engine.POST("/v1/routings/routing", controllers.AddRouting)
+	engine.DELETE("/v1/routings/:routingID", controllers.DelRouting)
+	engine.PUT("/v1/routings/:routingID", controllers.UpdateRouting)
+	engine.GET("/v1/routings/:routingID", controllers.GetRoutingInfo)
 
 	// engine.GET("/v1/plugins", controllers.GetAllPlugins)
 	// engine.PUT("/v1/plugins/:id/status", controllers.UpdatePluginsStatus)
 
-	// engine.GET("/v1/plugins/cache/rules", controllers.GetAllCahceRules)
-	// engine.POST("/v1/plugins/cache/rule", controllers.AddCahceRules)
-	// engine.DELETE("/v1/plugins/cache/rules/ruleID", controllers.DelCahceRules)
-	// engine.Update("/v1/plugins/cache/rules/:ruleID", controllers.UpdateCahceRules)
+	engine.GET("/v1/plugins/cache/rules", controllers.GetAllCacheRules)
+	engine.POST("/v1/plugins/cache/rule", controllers.AddCacheRule)
+	engine.DELETE("/v1/plugins/cache/rules/ruleID", controllers.DelCacheRule)
+	engine.PUT("/v1/plugins/cache/rules/:ruleID", controllers.UpdateCacheRule)
+	engine.GET("/v1/plugins/cache/rules/:ruleID", controllers.GetCacheRule)
 }
 
 func main() {
@@ -81,6 +85,9 @@ func main() {
 	if !*debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	// start health checker ....
+	healthchecking.Init(etcdAddrs, 1*time.Second)
 
 	// start the server
 	prepare()

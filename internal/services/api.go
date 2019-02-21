@@ -2,9 +2,10 @@ package services
 
 import (
 	"context"
-	"encoding/json"
+	// "encoding/json"
 	"errors"
-
+	
+	"github.com/jademperor/common/etcdutils"
 	"github.com/jademperor/common/configs"
 	"github.com/jademperor/common/models"
 	"github.com/jademperor/common/pkg/utils"
@@ -18,7 +19,7 @@ func AddAPI(api *models.API) (string, error) {
 	api.Idx = apiID
 	apiKey := utils.Fstring("%s%s", configs.APIsKey, apiID)
 
-	data, _ := json.Marshal(api)
+	data, _ := etcdutils.Encode(api)
 	if err := store.Set(apiKey, string(data), -1); err != nil {
 		return "", err
 	}
@@ -35,7 +36,7 @@ func DelAPI(apiID string) error {
 func UpdateAPI(api *models.API) error {
 	apiKey := utils.Fstring("%s%s", configs.APIsKey, api.Idx)
 
-	data, _ := json.Marshal(api)
+	data, _ := etcdutils.Encode(api)
 	if err := store.Set(apiKey, string(data), -1); err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func GetAllAPIs(limit, offset int) ([]*models.API, int, error) {
 
 	for _, node := range nodes {
 		api := new(models.API)
-		if err := json.Unmarshal([]byte(node.Value), api); err != nil {
+		if err := etcdutils.Decode(node.Value, api); err != nil {
 			logger.Logger.Errorf("GetAllAPIs got err: %v", err)
 			continue
 		}
@@ -89,7 +90,7 @@ func GetAPIInfo(apiID string) (*models.API, error) {
 	}
 
 	api := new(models.API)
-	if err = json.Unmarshal([]byte(v), api); err != nil {
+	if err = etcdutils.Decode(v, api); err != nil {
 		return nil, err
 	}
 

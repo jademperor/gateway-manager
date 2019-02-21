@@ -1,9 +1,6 @@
 package services
 
 import (
-	"sync"
-	"time"
-
 	"github.com/jademperor/common/etcdutils"
 	// "github.com/jademperor/common/pkg/utils"
 )
@@ -29,31 +26,31 @@ func Init(addrs []string) (err error) {
 	return
 }
 
-func newGLock() *gLock {
-	return &gLock{
-		changed:          false,
-		lastModifiedTime: time.Now(),
-		mutex:            &sync.RWMutex{},
-	}
-}
+// func newGLock() *gLock {
+// 	return &gLock{
+// 		changed:          false,
+// 		lastModifiedTime: time.Now(),
+// 		mutex:            &sync.RWMutex{},
+// 	}
+// }
 
-type gLock struct {
-	changed          bool          // changed flag
-	lastModifiedTime time.Time     // last modified time
-	mutex            *sync.RWMutex // rw mutex
-}
+// type gLock struct {
+// 	changed          bool          // changed flag
+// 	lastModifiedTime time.Time     // last modified time
+// 	mutex            *sync.RWMutex // rw mutex
+// }
 
-func (l *gLock) setChangedFlag(c bool) {
-	l.mutex.Lock()
-	defer l.mutex.Unlock()
+// func (l *gLock) setChangedFlag(c bool) {
+// 	l.mutex.Lock()
+// 	defer l.mutex.Unlock()
 
-	l.changed = c
-}
+// 	l.changed = c
+// }
 
-func (l *gLock) hasChanged() bool {
-	l.mutex.RLock()
-	defer l.mutex.RUnlock()
+// func (l *gLock) hasChanged() bool {
+// 	l.mutex.RLock()
+// 	defer l.mutex.RUnlock()
 
-	c := l.changed
-	return c
-}
+// 	c := l.changed
+// 	return c
+// }

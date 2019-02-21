@@ -126,6 +126,7 @@ func DelAPI(c *gin.Context) {
 	if err := services.DelAPI(apiID); err != nil {
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
+		return
 	}
 
 	code.FillCodeInfo(resp, code.GetCodeInfo(code.CodeOk))
@@ -182,6 +183,7 @@ func UpdateAPI(c *gin.Context) {
 	if err = services.UpdateAPI(apiCfg); err != nil {
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
+		return
 	}
 
 	code.FillCodeInfo(resp, code.GetCodeInfo(code.CodeOk))
@@ -206,6 +208,7 @@ func GetAPIInfo(c *gin.Context) {
 	if resp.API, err = services.GetAPIInfo(apiID); err != nil {
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
+		return
 	}
 
 	code.FillCodeInfo(resp, code.GetCodeInfo(code.CodeOk))
