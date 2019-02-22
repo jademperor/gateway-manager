@@ -4,9 +4,9 @@ import (
 	"context"
 	// "encoding/json"
 	"errors"
-	
-	"github.com/jademperor/common/etcdutils"
+
 	"github.com/jademperor/common/configs"
+	"github.com/jademperor/common/etcdutils"
 	"github.com/jademperor/common/models"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/logger"
@@ -35,12 +35,11 @@ func DelRouting(routingID string) error {
 // UpdateRouting ...
 func UpdateRouting(routing *models.Routing) error {
 	routingKey := utils.Fstring("%s%s", configs.RoutingsKey, routing.Idx)
-
-	data, _ := etcdutils.Encode(routing)
-	if err := store.Set(routingKey, string(data), -1); err != nil {
-		return err
+	data, err := etcdutils.Encode(routing)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return store.Set(routingKey, string(data), -1)
 }
 
 // GetAllRoutings get all routing configs from store

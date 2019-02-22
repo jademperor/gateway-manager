@@ -1,12 +1,12 @@
 package services
 
 import (
-	"github.com/jademperor/common/etcdutils"
 	"context"
 	// "encoding/json"
 	"errors"
 
 	"github.com/jademperor/common/configs"
+	"github.com/jademperor/common/etcdutils"
 	"github.com/jademperor/common/models"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/logger"
@@ -82,11 +82,11 @@ func UpdateCacheRule(ruleID, regexp string, enabled bool) error {
 		Regexp:  regexp,
 		Enabled: enabled,
 	}
-	data, _ := etcdutils.Encode(rule)
-	if err := store.Set(ruleKey, string(data), -1); err != nil {
-		return err
+	data, err := etcdutils.Encode(rule)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return store.Set(ruleKey, string(data), -1)
 }
 
 // GetCacheRule ...

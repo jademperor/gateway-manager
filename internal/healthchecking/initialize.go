@@ -100,7 +100,7 @@ func clusterWatchCallback(op etcdutils.OpCode, key, v string) {
 	if !isInstanceKey(key) {
 		return
 	}
-	
+
 	switch op {
 	case etcdutils.SetOp:
 		instance := new(models.ServerInstance)
@@ -108,7 +108,7 @@ func clusterWatchCallback(op etcdutils.OpCode, key, v string) {
 			logger.Logger.Errorf("etcdutils.Decode(v,instance) failed: err %v, v=[%s]", err, v)
 			return
 		}
-	
+
 		taskQMutex.RLock()
 		job, ok := taskQ[key]
 		taskQMutex.RUnlock()

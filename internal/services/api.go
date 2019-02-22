@@ -4,9 +4,9 @@ import (
 	"context"
 	// "encoding/json"
 	"errors"
-	
-	"github.com/jademperor/common/etcdutils"
+
 	"github.com/jademperor/common/configs"
+	"github.com/jademperor/common/etcdutils"
 	"github.com/jademperor/common/models"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/logger"
@@ -36,11 +36,11 @@ func DelAPI(apiID string) error {
 func UpdateAPI(api *models.API) error {
 	apiKey := utils.Fstring("%s%s", configs.APIsKey, api.Idx)
 
-	data, _ := etcdutils.Encode(api)
-	if err := store.Set(apiKey, string(data), -1); err != nil {
+	data, err := etcdutils.Encode(api)
+	if err != nil {
 		return err
 	}
-	return nil
+	return store.Set(apiKey, string(data), -1)
 }
 
 // GetAllAPIs get all api configs from store

@@ -12,7 +12,7 @@ import (
 
 type getAllCacheRulesForm struct {
 	Limit  int `form:"limit,default=10" binding:"gte=0"`
-	Offset int `form:"offset,defualt=0" binding:"gte=0"`
+	Offset int `form:"offset,default=0" binding:"gte=0"`
 }
 type getAllCacheRulesResp struct {
 	code.CodeInfo

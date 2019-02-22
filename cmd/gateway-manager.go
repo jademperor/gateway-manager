@@ -1,15 +1,15 @@
 package main
 
 import (
-	"time"
 	"flag"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jademperor/common/pkg/ginutils"
-	"github.com/jademperor/gateway-manager/internal/healthchecking"
 	"github.com/jademperor/common/pkg/utils"
 	"github.com/jademperor/gateway-manager/internal/controllers"
+	"github.com/jademperor/gateway-manager/internal/healthchecking"
 	"github.com/jademperor/gateway-manager/internal/logger"
 	"github.com/jademperor/gateway-manager/internal/services"
 )
