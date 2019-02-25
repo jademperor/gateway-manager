@@ -48,10 +48,10 @@ func GetAllAPIs(c *gin.Context) {
 type addAPIForm struct {
 	Path            string            `json:"path" binding:"required"`
 	Method          string            `json:"method" binding:"required"`
-	TargetClusterID string            `json:"target_cluster_id" binding:"required"`
-	RewritePath     string            `json:"rewrite_path" binding:"required"`
+	TargetClusterID string            `json:"target_cluster_id"`
+	RewritePath     string            `json:"rewrite_path"`
 	NeedCombine     bool              `json:"need_combine"`
-	CombineReqCfgs  []*apiCombination `json:"api_combination" binding:"required"`
+	CombineReqCfgs  []*apiCombination `json:"combinations" binding:"required"`
 }
 
 type apiCombination struct {
@@ -136,10 +136,10 @@ func DelAPI(c *gin.Context) {
 type updateAPIForm struct {
 	Path            string            `json:"path" binding:"required"`
 	Method          string            `json:"method" binding:"required"`
-	TargetClusterID string            `json:"target_cluster_id" binding:"required"`
-	RewritePath     string            `json:"rewrite_path" binding:"required"`
+	TargetClusterID string            `json:"target_cluster_id"`
+	RewritePath     string            `json:"rewrite_path"`
 	NeedCombine     bool              `json:"need_combine"`
-	CombineReqCfgs  []*apiCombination `json:"api_combination" binding:"required"`
+	CombineReqCfgs  []*apiCombination `json:"combinations" binding:"required"`
 }
 type updateAPIResp struct {
 	code.CodeInfo

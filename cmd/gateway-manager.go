@@ -27,6 +27,7 @@ func prepare() {
 	engine = gin.New()
 
 	// install middlewares
+	engine.Use(ginutils.CORS())
 	engine.Use(ginutils.Recovery(logger.Logger.Out))
 	engine.Use(ginutils.LogRequest(logger.Logger, false))
 
@@ -61,7 +62,7 @@ func prepare() {
 
 	engine.GET("/v1/plugins/cache/rules", controllers.GetAllCacheRules)
 	engine.POST("/v1/plugins/cache/rule", controllers.AddCacheRule)
-	engine.DELETE("/v1/plugins/cache/rules/ruleID", controllers.DelCacheRule)
+	engine.DELETE("/v1/plugins/cache/rules/:ruleID", controllers.DelCacheRule)
 	engine.PUT("/v1/plugins/cache/rules/:ruleID", controllers.UpdateCacheRule)
 	engine.GET("/v1/plugins/cache/rules/:ruleID", controllers.GetCacheRule)
 }
