@@ -46,9 +46,9 @@ func GetAllRoutings(c *gin.Context) {
 }
 
 type addRoutingForm struct {
-	Prefix          string `json:"prefix" binding:"required"`
-	ClusterID       string `json:"cluster_id" binding:"required"`
-	NeedStripPrefix bool   `json:"need_strip_prefix" binding:"required"`
+	Prefix          string `form:"prefix" binding:"required"`
+	ClusterID       string `form:"target_cluster_id" binding:"required"`
+	NeedStripPrefix bool   `form:"need_strip_prefix"`
 }
 
 type addRoutingResp struct {
@@ -64,7 +64,7 @@ func AddRouting(c *gin.Context) {
 		err  error
 	)
 
-	if err = c.ShouldBindJSON(form); err != nil {
+	if err = c.ShouldBind(form); err != nil {
 		err = ginutils.HdlValidationErrors(err)
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)
@@ -111,9 +111,9 @@ func DelRouting(c *gin.Context) {
 }
 
 type updateRoutingForm struct {
-	Prefix          string `json:"prefix" binding:"required"`
-	ClusterID       string `json:"cluster_id" binding:"required"`
-	NeedStripPrefix bool   `json:"need_strip_prefix" binding:"required"`
+	Prefix          string `form:"prefix" binding:"required"`
+	ClusterID       string `form:"target_cluster_id" binding:"required"`
+	NeedStripPrefix bool   `form:"need_strip_prefix"`
 }
 type updateRoutingResp struct {
 	code.CodeInfo
@@ -127,7 +127,7 @@ func UpdateRouting(c *gin.Context) {
 		err  error
 	)
 
-	if err = c.ShouldBindJSON(form); err != nil {
+	if err = c.ShouldBind(form); err != nil {
 		err = ginutils.HdlValidationErrors(err)
 		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
 		c.JSON(http.StatusOK, resp)

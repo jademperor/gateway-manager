@@ -37,7 +37,8 @@ func UpdateRouting(routing *models.Routing) error {
 	routingKey := utils.Fstring("%s%s", configs.RoutingsKey, routing.Idx)
 	data, err := etcdutils.Encode(routing)
 	if err != nil {
-		return nil
+		logger.Logger.Errorf("etcdutils.Encode(routing) got err: %v", err)
+		return err
 	}
 	return store.Set(routingKey, string(data), -1)
 }

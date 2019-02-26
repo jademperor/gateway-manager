@@ -35,6 +35,7 @@ func prepare() {
 	// engine.GET("/v1/local", controllers.LocalManageAPIS)
 
 	engine.GET("/v1/clusters", controllers.GetAllClusters)
+	engine.GET("/v1/cluster_ids", controllers.GetAllClustersIDs)
 	engine.POST("/v1/cluster", controllers.AddCluster)
 	engine.DELETE("/v1/clusters/:clusterID", controllers.DelCluster)
 	engine.PUT("/v1/clusters/:clusterID", controllers.UpdateClusterInfo)

@@ -84,6 +84,7 @@ func GetAllClusters() ([]*Cluster, error) {
 	}
 	for _, clusterNode := range resp.Node.Nodes {
 		clusterID := strings.Split(clusterNode.Key, "/")[2]
+		logger.Logger.Infof("find cluster %s", clusterID)
 		clsOpt := new(models.ClusterOption)
 		srvInses := make([]*models.ServerInstance, 0)
 		if resp2, err := store.Kapi.Get(context.Background(), clusterNode.Key, nil); err == nil && resp2.Node.Dir {
@@ -103,17 +104,59 @@ func GetAllClusters() ([]*Cluster, error) {
 				}
 				srvInses = append(srvInses, srvInsCfg)
 			}
-			if len(srvInses) != 0 {
-				clusterCfgs = append(clusterCfgs, &Cluster{
-					Idx:       clusterID,
-					Name:      clsOpt.Name,
-					Instances: srvInses,
-				})
-			}
+		} else {
+			logger.Logger.Errorf("store.Kapi.Get got an err: %v", err)
 		}
+
+		clusterCfgs = append(clusterCfgs, &Cluster{
+			Idx:       clusterID,
+			Name:      clsOpt.Name,
+			Instances: srvInses,
+		})
 	}
 
 	return clusterCfgs, nil
+}
+
+// ClusterID ....
+type ClusterID struct {
+	Name string `json:"name"`
+	Idx  string `json:"idx"`
+}
+
+// GetAllClusterIDs ....
+func GetAllClusterIDs() ([]*ClusterID, error) {
+	var (
+		clusterIDs = make([]*ClusterID, 0)
+	)
+	resp, err := store.Kapi.Get(context.Background(), configs.ClustersKey, nil)
+	if err != nil {
+		return nil, err
+	} else if !resp.Node.Dir {
+		return clusterIDs, nil
+	}
+
+	// all cluster
+	for _, clusterNode := range resp.Node.Nodes {
+		// clusterID := strings.Split(clusterNode.Key, "/")[2]
+		clsOpt := new(models.ClusterOption)
+
+		optResp, err := store.Kapi.Get(context.Background(), clusterNode.Key+"/"+configs.ClusterOptionsKey, nil)
+		if err != nil {
+			return clusterIDs, err
+		}
+		if err := etcdutils.Decode(optResp.Node.Value, clsOpt); err != nil {
+			logger.Logger.Error(err)
+			continue
+		}
+
+		clusterIDs = append(clusterIDs, &ClusterID{
+			Idx:  clsOpt.Idx,
+			Name: clsOpt.Name,
+		})
+	}
+
+	return clusterIDs, nil
 }
 
 // GetClusterInfo ...

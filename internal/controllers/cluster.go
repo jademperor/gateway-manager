@@ -34,6 +34,29 @@ func GetAllClusters(c *gin.Context) {
 	return
 }
 
+type getAllClustersIDsResp struct {
+	code.CodeInfo
+	ClusterIDs []*services.ClusterID `json:"cluster_ids"`
+}
+
+// GetAllClustersIDs ....
+func GetAllClustersIDs(c *gin.Context) {
+	var (
+		resp = new(getAllClustersIDsResp)
+		err  error
+	)
+
+	if resp.ClusterIDs, err = services.GetAllClusterIDs(); err != nil {
+		code.FillCodeInfo(resp, code.NewCodeInfo(code.CodeSystemErr, err.Error()))
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	code.FillCodeInfo(resp, code.GetCodeInfo(code.CodeOk))
+	c.JSON(http.StatusOK, resp)
+	return
+}
+
 // JSON type request data
 type addClusterJSON struct {
 	Name      string                   `json:"name" binding:"required"`
