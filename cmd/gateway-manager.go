@@ -61,11 +61,11 @@ func prepare() {
 	// engine.GET("/v1/plugins", controllers.GetAllPlugins)
 	// engine.PUT("/v1/plugins/:id/status", controllers.UpdatePluginsStatus)
 
-	engine.GET("/v1/plugins/cache/rules", controllers.GetAllCacheRules)
-	engine.POST("/v1/plugins/cache/rule", controllers.AddCacheRule)
-	engine.DELETE("/v1/plugins/cache/rules/:ruleID", controllers.DelCacheRule)
-	engine.PUT("/v1/plugins/cache/rules/:ruleID", controllers.UpdateCacheRule)
-	engine.GET("/v1/plugins/cache/rules/:ruleID", controllers.GetCacheRule)
+	// engine.GET("/v1/plugins/cache/rules", controllers.GetAllCacheRules)
+	// engine.POST("/v1/plugins/cache/rule", controllers.AddCacheRule)
+	// engine.DELETE("/v1/plugins/cache/rules/:ruleID", controllers.DelCacheRule)
+	// engine.PUT("/v1/plugins/cache/rules/:ruleID", controllers.UpdateCacheRule)
+	// engine.GET("/v1/plugins/cache/rules/:ruleID", controllers.GetCacheRule)
 }
 
 func main() {
